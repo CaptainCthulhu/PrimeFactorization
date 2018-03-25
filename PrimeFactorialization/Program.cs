@@ -12,9 +12,9 @@ namespace PrimeFactorialization
         static HashSet<int> nonPrimes = new HashSet<int>();
         static Random rand = new Random();
         static int goal;
-        static int numRuns = 1000;        
+        static int numRuns = 10;        
         static int rangeLow = 3;
-        static int rangeHigh = 1000000;
+        static int rangeHigh = 100000000;
         static bool logging = true;
 
         static void Main(string[] args)
@@ -47,7 +47,7 @@ namespace PrimeFactorialization
             Write(string.Format("Run #{0:n0}. Prime Factors of {1:n0}: ", i, goal));
             Factorialize(goal);  
             CalculatePrimes();            
-            Write(string.Format("{0}\n", string.Join(", ", Sort())));
+            Write(string.Format("{0}", string.Join(", ", Sort())));
         }
 
         static int[] Sort()
@@ -97,7 +97,7 @@ namespace PrimeFactorialization
 
             potentialPrimes.Add(num);
 
-            for (int i = 2; i < num; ++i)
+            for (int i = 2; i < Math.Ceiling(Math.Sqrt(num)); ++i)
             {
                 if (num % i == 0)
                 {
