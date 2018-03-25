@@ -6,13 +6,13 @@ namespace PrimeFactorialization
 {
     class Program
     {
-        static List<int> potentialPrimes;
-        static List<int> actualPrimes;
+        static HashSet<int> potentialPrimes;
+        static HashSet<int> actualPrimes;
         static HashSet<int> primeFilters = new HashSet<int>();
         static HashSet<int> nonPrimes = new HashSet<int>();
         static Random rand = new Random();
         static int goal;
-        static int numRuns = 10;        
+        static int numRuns = 1000;        
         static int rangeLow = 3;
         static int rangeHigh = 1000000;
         static bool logging = true;
@@ -40,16 +40,21 @@ namespace PrimeFactorialization
 
         static void Run(int i)
         {
-            potentialPrimes = new List<int>();
-            actualPrimes = new List<int>();
+            potentialPrimes = new HashSet<int>();
+            actualPrimes = new HashSet<int>();
 
             goal = rand.Next(rangeLow, rangeHigh);
-            Write(string.Format("Run #{0:n0} Prime Factors of {1:n0}: ", i, goal));
-            Factorialize(goal);            
-            Clean();
-            CalculatePrimes();
+            Write(string.Format("Run #{0:n0}. Prime Factors of {1:n0}: ", i, goal));
+            Factorialize(goal);  
+            CalculatePrimes();            
+            Write(string.Format("{0}\n", string.Join(", ", Sort())));
+        }
 
-            Write(string.Format("{0}", string.Join(", ", actualPrimes)));
+        static int[] Sort()
+        {
+            int[] returnArray = actualPrimes.ToArray<int>();
+            Array.Sort(returnArray);
+            return returnArray;
         }
        
 
@@ -83,17 +88,11 @@ namespace PrimeFactorialization
                     actualPrimes.Add(x);
                 }
             }
-        }    
-
-        static void Clean()
-        {
-            potentialPrimes = (from d in potentialPrimes select d).Distinct().ToList<int>();
-            potentialPrimes.Sort();
-        }        
+        } 
 
         static void Factorialize(int num)
         {
-            if (actualPrimes.IndexOf(num) > -1 || potentialPrimes.IndexOf(num) > - 1 || nonPrimes.Contains(num))
+            if (actualPrimes.Contains(num) || potentialPrimes.Contains(num) || nonPrimes.Contains(num))
                 return;
 
             potentialPrimes.Add(num);
