@@ -7,13 +7,15 @@ namespace PrimeFactorialization
     class Program
     {
         static List<int> potentialPrimes;
-        static HashSet<int> eSeive = new HashSet<int>();
+        static List<int> actualPrimes;
+        static HashSet<int> primeFilters = new HashSet<int>();
+        static HashSet<int> nonPrimes = new HashSet<int>();
         static Random rand = new Random();
         static int goal;
-        static int numRuns = 100;
-        static int maxSieve = 3;
-        static int rangeLow = 100;
-        static int rangeHigh = 100000000;
+        static int numRuns = 10;        
+        static int rangeLow = 3;
+        static int rangeHigh = 1000000;
+        static bool logging = true;
 
         static void Main(string[] args)
         {
@@ -22,54 +24,64 @@ namespace PrimeFactorialization
                 Run(runs);
             }
 
-            //Console.WriteLine("\nDone!");
-            //Console.ReadKey();
+            Write("\nDone!");
+            if (logging)
+            {                
+                Console.ReadKey();
+            }
+        }
+
+        static void Write(string line)
+        {
+            if (logging)
+                Console.WriteLine(line);
         }
 
 
         static void Run(int i)
         {
             potentialPrimes = new List<int>();
+            actualPrimes = new List<int>();
 
             goal = rand.Next(rangeLow, rangeHigh);
-            Console.WriteLine("Run #{0:n0} Prime Factors of {1:n0}: ", i, goal);
+            Write(string.Format("Run #{0:n0} Prime Factors of {1:n0}: ", i, goal));
             Factorialize(goal);            
             Clean();
-            FillSieve();
-            Filter();
+            CalculatePrimes();
 
-            Console.WriteLine(string.Format("{0}", string.Join(", ", potentialPrimes)));
+            Write(string.Format("{0}", string.Join(", ", actualPrimes)));
         }
+       
 
-        static void Filter()
+        static void CalculatePrimes()
         {
-            potentialPrimes = potentialPrimes.Intersect(eSeive).ToList<int>();
-        }
+            primeFilters.Add(2);
 
-        static void FillSieve()
-        {
-            eSeive.Add(2);
-            if (maxSieve < potentialPrimes.Max())
-            {                
-                bool isPrime;                
-                for (int i = maxSieve; i <= potentialPrimes.Max(); i += 2)
+            bool isPrime;
+            foreach (int x in potentialPrimes)
+            {
+                isPrime = true;
+                if (nonPrimes.Contains(x))
+                    isPrime = false;
+                else if (!primeFilters.Contains(x))
                 {
-                    isPrime = true;
-                    if (!eSeive.Contains(i))
+                    for (int i = 2; i <= Math.Ceiling(Math.Sqrt(x)); i++)
                     {
-                        foreach (int e in eSeive)
+                        isPrime = true;
+                        if (x % i == 0)
                         {
-                            if (e <= i && i % e == 0)
-                            {
-                                isPrime = false;
-                                break;
-                            }
+                            isPrime = false;
+                            nonPrimes.Add(x);
+                            break;
                         }
-                        if (isPrime)
-                            eSeive.Add(i);
                     }
                 }
-                maxSieve = (potentialPrimes.Max() % 2 != 0 ? potentialPrimes.Max() : potentialPrimes.Max() - 1);
+
+                if (isPrime)
+                {
+                    primeFilters.Add(x);
+                    actualPrimes.Add(x);
+                }
             }
         }    
 
@@ -81,10 +93,10 @@ namespace PrimeFactorialization
 
         static void Factorialize(int num)
         {
-            if (potentialPrimes.IndexOf(num) > -1)
+            if (actualPrimes.IndexOf(num) > -1 || potentialPrimes.IndexOf(num) > - 1 || nonPrimes.Contains(num))
                 return;
-            else if (num % 2 != 0)
-                potentialPrimes.Add(num);
+
+            potentialPrimes.Add(num);
 
             for (int i = 2; i < num; ++i)
             {
