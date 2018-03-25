@@ -10,8 +10,10 @@ namespace PrimeFactorialization
         static HashSet<int> eSeive = new HashSet<int>();
         static Random rand = new Random();
         static int goal;
-        static int numRuns = 5;
+        static int numRuns = 100;
         static int maxSieve = 3;
+        static int rangeLow = 100;
+        static int rangeHigh = 100000000;
 
         static void Main(string[] args)
         {
@@ -20,8 +22,8 @@ namespace PrimeFactorialization
                 Run(runs);
             }
 
-            Console.WriteLine("\nDone!");
-            Console.ReadKey();
+            //Console.WriteLine("\nDone!");
+            //Console.ReadKey();
         }
 
 
@@ -29,14 +31,14 @@ namespace PrimeFactorialization
         {
             potentialPrimes = new List<int>();
 
-            goal = rand.Next(100, 100000);            
-            Factorialize(goal);
+            goal = rand.Next(rangeLow, rangeHigh);
+            Console.WriteLine("Run #{0:n0} Prime Factors of {1:n0}: ", i, goal);
+            Factorialize(goal);            
+            Clean();
             FillSieve();
             Filter();
-            Clean();
 
-            Console.WriteLine(string.Format("Run #{0:n0} Prime Factors of {1:n0}: {2}",
-                i, goal, string.Join(", ", potentialPrimes)));
+            Console.WriteLine(string.Format("{0}", string.Join(", ", potentialPrimes)));
         }
 
         static void Filter()
@@ -81,7 +83,7 @@ namespace PrimeFactorialization
         {
             if (potentialPrimes.IndexOf(num) > -1)
                 return;
-            else
+            else if (num % 2 != 0)
                 potentialPrimes.Add(num);
 
             for (int i = 2; i < num; ++i)
